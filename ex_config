@@ -1,0 +1,9 @@
+[general]
+framerate = 15
+bars = 10
+
+[output]
+method = raw
+data_format = binary
+bit_format = 8bit
+ 
