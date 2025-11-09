@@ -8,6 +8,7 @@ Use like so:
 
 - `<path to executable> <output width> <framerate>`
 - I've found a width of 15 and a framerate of 30 works weel for my taskbar
+  - `target/release/cava-blocks 15 30`
 
 ## Installation
 
