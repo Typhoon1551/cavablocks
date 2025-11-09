@@ -16,7 +16,6 @@ fn main() {
 [general]
 framerate = {}
 bars = {}
-sensetivity = 50
 [output]
 method = raw
 data_format = binary
@@ -36,26 +35,30 @@ waveform = 0"#,
         .expect("cava failed for some reason");
 
     let stdout = output.stdout.take().expect("Failed to get stdout handle");
-    let reader = BufReader::new(stdout);
+    let mut reader = BufReader::new(stdout);
 
-    let mut bars: Vec<&str> = Vec::new();
-
-    for byte in reader.bytes() {
-        if bars.len() < width {
-            let i: &str = match byte.expect("Failed to read byte") {
-                0..32 => "▁",
-                32..64 => "▂",
-                64..96 => "▃",
-                96..128 => "▄",
-                128..160 => "▅",
-                160..192 => "▆",
-                192..224 => "▇",
-                224..=255 => "█",
-            };
-            bars.push(i);
-        } else {
-            println!("{}", bars.join(""));
-            bars = Vec::new();
+    loop {
+        let mut buffer = vec![0_u8; width];
+        match reader.read_exact(&mut buffer) {
+            Ok(()) => create_blocks(buffer),
+            Err(_) => continue,
         }
     }
+}
+
+fn create_blocks(bytes: Vec<u8>) {
+    let block = |b: u8| -> char {
+        match b {
+            0..32 => '▁',
+            32..64 => '▂',
+            64..96 => '▃',
+            96..128 => '▄',
+            128..160 => '▅',
+            160..192 => '▆',
+            192..224 => '▇',
+            224..=255 => '█',
+        }
+    };
+    let res = bytes.into_iter().map(block);
+    println!("{}", res.collect::<String>())
 }
